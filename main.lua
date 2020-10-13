@@ -6,26 +6,29 @@ function lovr.load()
         lovr.graphics.newMaterial(lovr.graphics.newTexture('windmill.jpg', { mipmaps = false }))
     }
     sphere = {
-        position = lovr.math.newVec3(0, 1.2, -1),
-        radius = .15
+        position = lovr.math.newVec3(0, 1.1, -1),
+        translater = 0,
+        translateThreshold = 1.3,
+        radius = .15,
+        posRelativeToHead = lovr.math.newVec3(),
+        yOverride = 1.1
     }
     currentPhoto = 1
-    headOffset = lovr.graphics.newVec3(0, -.5, -1)
+    headOffset = lovr.math.newVec3(0, -0.5, -0.6)
     shader = lovr.graphics.newShader(bubbleShader())
 end
 
+-- App cycle
 function lovr.update(dt)
     handlePhotoSelection()
-    local posRelativeToHead = mat4(lovr.headset.getPose()):translate(headOffset)
-    sphere.position:set(posRelativeToHead)
+    repositionSelectionSphere(dt)
 end
 
 function handlePhotoSelection()
     for i, hand in ipairs(lovr.headset.getHands()) do
-        local p = lovr.math.vec3(lovr.headset.getPose(hand))
-        local d = p - sphere.position
-        inSphere = (d.x * d.x + d.y * d.y + d.z * d.z) < math.pow(sphere.radius, 2)
-        if inSphere then
+        local handPos =  lovr.math.vec3(lovr.headset.getPose(hand))
+        handInSphere = sphereDistanceTest(handPos, sphere.radius)
+        if handInSphere then
             if lovr.headset.wasPressed(hand, 'trigger') then
                 cyclePhoto()
             end
@@ -33,6 +36,17 @@ function handlePhotoSelection()
     end
 end
 
+function repositionSelectionSphere(variator)
+    local headPos = lovr.math.vec3(lovr.headset.getPose())
+    local sphereNearHead = sphereDistanceTest(headPos, sphere.translateThreshold)
+    if not sphereNearHead then
+        local v = lovr.math.vec3(mat4(lovr.headset.getPose()):translate(headOffset))
+        sphere.posRelativeToHead:set(v.x, sphere.yOverride, v.z)
+        sphere.translater = math.min(sphere.translater + variator * .05, 1)
+    end
+end
+
+-- Rendering
 function lovr.draw()
     lovr.graphics.skybox(photos[currentPhoto]:getTexture())
 
@@ -41,9 +55,11 @@ function lovr.draw()
 end
 
 function drawSphere()
-    local color = inSphere and 0xffffff or 0xd3d3d3
+    local color = handInSphere and 0xffffff or 0xd3d3d3
+    local ease = quadraticEaseInOut(sphere.translater)
     lovr.graphics.setColor(color)
     lovr.graphics.setShader(shader)
+    sphere.position:lerp(sphere.posRelativeToHead, ease)
     lovr.graphics.sphere(photos[nextPhoto()], sphere.position, sphere.radius)
     lovr.graphics.setShader()
     lovr.graphics.setColor(0xffffff)
@@ -60,6 +76,7 @@ function drawControllers()
     end
 end
 
+-- Update and Draw helpers
 function cyclePhoto()
     currentPhoto = nextPhoto()
 end
@@ -68,6 +85,16 @@ function nextPhoto()
     return (currentPhoto % #photos) + 1
 end
 
+function sphereDistanceTest(pos, dist)
+    local d = pos - sphere.position
+    return (d.x * d.x + d.y * d.y + d.z * d.z) < (dist ^ 2)
+end
+
+function quadraticEaseInOut(val)
+    return val < 0.5 and 2 * val * val or 1 - math.pow(-2 * val + 2, 2) / 2
+end
+
+-- Shader
 function bubbleShader()
     return [[
         out vec3 FragmentPos;
