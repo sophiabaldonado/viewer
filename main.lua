@@ -10,10 +10,17 @@ function lovr.load()
         radius = .15
     }
     currentPhoto = 1
+    headOffset = lovr.graphics.newVec3(0, -.5, -1)
     shader = lovr.graphics.newShader(bubbleShader())
 end
 
 function lovr.update(dt)
+    handlePhotoSelection()
+    local posRelativeToHead = mat4(lovr.headset.getPose()):translate(headOffset)
+    sphere.position:set(posRelativeToHead)
+end
+
+function handlePhotoSelection()
     for i, hand in ipairs(lovr.headset.getHands()) do
         local p = lovr.math.vec3(lovr.headset.getPose(hand))
         local d = p - sphere.position
