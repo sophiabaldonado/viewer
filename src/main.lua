@@ -20,6 +20,8 @@ function lovr.load()
     currentPhoto = 1
     rimLightShader = lovr.graphics.newShader(createRimLightShader())
     highlightShader = lovr.graphics.newShader(createHighlightShader())
+
+    repositionSelectionSphere(5)
 end
 
 -- App cycle
