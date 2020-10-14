@@ -71,9 +71,11 @@ function drawSphere()
     lovr.graphics.setCullingEnabled(true)
     lovr.graphics.setWinding('clockwise')
 
+    -- Draw the selection sphere
     lovr.graphics.sphere(photos[nextPhoto()], sphere.position, sphere.radius)
     lovr.graphics.setWinding('counterclockwise')
 
+    -- Draw the sphere again but only render the specular highlight
     lovr.graphics.setDepthTest(nil, false)
     lovr.graphics.setShader(highlightShader)
     lovr.graphics.sphere(photos[nextPhoto()], sphere.position, sphere.radius)
