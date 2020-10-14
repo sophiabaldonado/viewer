@@ -132,7 +132,7 @@ function createRimLightShader()
             vec3 toCam = normalize(CameraPos - FragmentPos);
             float rimAmt = 1.0 - max(0.0, dot(normalize(Normal), toCam));
             rimAmt = pow(rimAmt, 3.);
-            return mix(texture(image, uv) * graphicsColor * .9, vec4(1.), rimAmt);
+            return mix(texture(image, uv) * graphicsColor, vec4(1.), rimAmt);
         }
     ]]
 end
