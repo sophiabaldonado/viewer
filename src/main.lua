@@ -2,7 +2,6 @@ function lovr.load()
     controllerModels = {}
     photos = {
         lovr.graphics.newMaterial(lovr.graphics.newTexture('country.jpg', { mipmaps = false })),
-        lovr.graphics.newMaterial(lovr.graphics.newTexture('mountains.jpg', { mipmaps = false })),
         lovr.graphics.newMaterial(lovr.graphics.newTexture('windmill.jpg', { mipmaps = false }))
     }
     sphere = {
