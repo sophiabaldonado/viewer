@@ -1,0 +1,7 @@
+{
+  "name": "viewer",
+  "repository": "https://github.com/sophiabaldonado/viewer.git",
+  "description": "360 Photo Viewer\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[",
+  "xr_type": "webxr-site@0.0.1",
+  "start_url": "index.html"
+}

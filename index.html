@@ -21,14 +21,6 @@
         margin: 40px auto;
         outline: none;
       }
-
-      button {
-        display: block;
-        margin: 0 auto;
-        font-size: 18px;
-        border-radius: 4px;
-        padding: 8px 16px;
-      }
     </style>
 
     <meta charset="utf-8"/>
@@ -43,10 +35,8 @@
     <script async src="https://lovr.org/static/f/v0.14.0/lovr.js"></script>
 
     <script type="text/javascript">
-      var container = document.querySelector('.container');
+      var timer;
       var canvas = document.getElementById('canvas');
-      var button = document.createElement('button');
-      button.textContent = 'Enter VR';
 
       var Module = window.Module = {
         arguments: [],
@@ -57,7 +47,6 @@
         thisProgram: './lovr',
         canvas: canvas
       };
-
       // To run a LÖVR project on this page, create a .lovr (zip) file of its folder and serve it
       // alongside the HTML file.  Then set the 'project' variable below to the project's filename.
       // This downloads the .lovr file into the virtual filesystem and adds it as a virtual command
@@ -72,38 +61,27 @@
         });
       }
 
-      // If WebXR is supported and immersive sessions are supported, add a button to the DOM that
-      // controls starting/stopping the immersive session.
-      if (navigator.xr) {
-        navigator.xr.isSessionSupported('immersive-vr').then(function(supported) {
-          if (!supported) return;
+      var setupWebXR = function() {
+        if (!Module.lovr) return;
+        // If WebXR is supported and immersive sessions are supported, add a button to the DOM that
+        // controls starting/stopping the immersive session.
+        if (navigator.xr) {
+          navigator.xr.isSessionSupported('immersive-vr').then(function(supported) {
+            if (!supported) return;
 
-          container.appendChild(button);
-
-          var active = false;
-
-          function onEnter() {
-            active = true;
-            button.textContent = 'Exit VR';
-          }
-
-          function onExit() {
-            active = false;
-            button.textContent = 'Enter VR';
-          }
-
-          button.addEventListener('click', function() {
-            if (!active) {
+            navigator.xr.addEventListener('sessiongranted', e => {
               Module.lovr.enterVR().then(function(session) {
-                session.addEventListener('end', onExit);
-                onEnter();
+                session.addEventListener('end', () => {});
               });
-            } else {
-              Module.lovr.exitVR().then(onExit);
-            }
+            });
+
+            // Module.lovr.exitVR().then(onExit);
           });
-        });
-      }
+        }
+        clearInterval(timer);
+      };
+
+      timer = setInterval(setupWebXR, 100);
     </script>
   </body>
 </html>

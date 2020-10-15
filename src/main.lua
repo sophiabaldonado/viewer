@@ -114,7 +114,7 @@ function quadraticEaseInOut(val)
     return val < 0.5 and 2 * val * val or 1 - math.pow(-2 * val + 2, 2) / 2
 end
 
--- Shader
+-- Shaders
 function createRimLightShader()
     return [[
         out vec3 FragmentPos;
