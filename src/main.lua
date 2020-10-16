@@ -1,4 +1,5 @@
 function lovr.load()
+    print('||| lovr loaded!!')
     controllerModels = {}
     photos = {
         lovr.graphics.newMaterial(lovr.graphics.newTexture('country.jpg', { mipmaps = false })),
@@ -30,10 +31,29 @@ function lovr.update(dt)
     repositionSelectionSphere(dt)
 end
 
+function flr(num)
+    return math.floor(num * 10) / 10
+end
+
 function handlePhotoSelection()
+    -- local x, y, z = lovr.headset.getPose('head')
+    -- print('||| lovr head '..flr(x)..', '..flr(y)..', '..flr(z))
+    -- print('||| lovr update')
     for i, hand in ipairs(lovr.headset.getHands()) do
+        print('||| lovr hand '..hand..' in '..tostring(handInSphere))
         local handPos =  lovr.math.vec3(lovr.headset.getPose(hand))
         handInSphere = sphereDistanceTest(handPos, sphere.radius)
+        if lovr.headset.wasPressed(hand, 'trigger') then
+            print('||| controller: ('..
+                flr(handPos.x)..', '..
+                flr(handPos.y)..', '..
+                flr(handPos.z)..
+                ') sphere: ('..
+                flr(sphere.position.x)..', '..
+                flr(sphere.position.y)..', '..
+                flr(sphere.position.z)..')'..
+                ' insphere: '..tostring(handInSphere))
+        end
         if handInSphere then
             if lovr.headset.wasPressed(hand, 'trigger') then
                 cyclePhoto()

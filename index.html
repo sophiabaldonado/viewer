@@ -32,7 +32,7 @@
       <canvas id="canvas" width="1080" height="600" tabIndex="1"></canvas>
     </div>
 
-    <script async src="https://lovr.org/static/f/v0.14.0/lovr.js"></script>
+    <script async src="lovr.js"></script>
 
     <script type="text/javascript">
       var timer;
@@ -71,7 +71,12 @@
 
             navigator.xr.addEventListener('sessiongranted', e => {
               Module.lovr.enterVR().then(function(session) {
-                session.addEventListener('end', () => {});
+                console.log(session.inputSources)
+                setTimeout(() => console.log(session.inputSources), 5000)
+                // session.addEventListener('inputsourceschange', e => {
+                //   console.log('|| index inputsourceschange', e)
+                // })
+                session.addEventListener('end', e => console.log('|| end'))
               });
             });
 
